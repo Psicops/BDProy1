@@ -1,19 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ui;
 
-/**
- *
- * @author Alejandro
- */
+import javax.swing.text.BadLocationException;
+import logic.ParserAR;
+
 public class VentanaPrincipal extends javax.swing.JFrame {
 
-    /**
-     * Creates new form VentanaPrincipal
-     */
     public VentanaPrincipal() {
         initComponents();
     }
@@ -27,126 +18,97 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList();
-        jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jLabel4 = new javax.swing.JLabel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jList2 = new javax.swing.JList();
+        popupPermanentes = new javax.swing.JPopupMenu();
+        menuItemCopiarNombrePermanentes = new javax.swing.JMenuItem();
+        menuItemVerTablaPermanentes = new javax.swing.JMenuItem();
+        popupTemporales = new javax.swing.JPopupMenu();
+        menuItemCopiarNombreTemporales = new javax.swing.JMenuItem();
+        menuItemVerTablaTemporales = new javax.swing.JMenuItem();
         jLabel5 = new javax.swing.JLabel();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
-        jButton6 = new javax.swing.JButton();
-        jButton7 = new javax.swing.JButton();
-        jButton8 = new javax.swing.JButton();
-        jButton9 = new javax.swing.JButton();
-        jButton10 = new javax.swing.JButton();
-        jButton11 = new javax.swing.JButton();
-        jButton12 = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        scrollpanePermanentes = new javax.swing.JScrollPane();
+        listaPermanentes = new javax.swing.JList();
+        scrollpaneTemporales = new javax.swing.JScrollPane();
+        listaTemporales = new javax.swing.JList();
+        scrollpaneGeneral = new javax.swing.JScrollPane();
+        tablaGeneral = new javax.swing.JTable();
+        textfieldInstruccionAR = new javax.swing.JTextField();
+        textfieldInstruccionSQL = new javax.swing.JTextField();
+        botonEjecutar = new javax.swing.JButton();
+        comboboxOperaciones = new javax.swing.JComboBox();
+        botonAgregar = new javax.swing.JButton();
+
+        menuItemCopiarNombrePermanentes.setText("Copiar Nombre");
+        popupPermanentes.add(menuItemCopiarNombrePermanentes);
+
+        menuItemVerTablaPermanentes.setText("Ver Tabla");
+        popupPermanentes.add(menuItemVerTablaPermanentes);
+
+        menuItemCopiarNombreTemporales.setText("Copiar Nombre");
+        popupTemporales.add(menuItemCopiarNombreTemporales);
+
+        menuItemVerTablaTemporales.setText("Ver Tabla");
+        popupTemporales.add(menuItemVerTablaTemporales);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        jList1.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane1.setViewportView(jList1);
-
-        jLabel1.setText("Escriba Instrucción de Álgebra Relacional:");
-
-        jTextField1.setFont(new java.awt.Font("Cambria Math", 0, 13)); // NOI18N
-
-        jLabel4.setText("Tablas Permanentes:");
-
-        jList2.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane2.setViewportView(jList2);
+        setResizable(false);
 
         jLabel5.setText("Tablas Temporales:");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        jLabel1.setText("Escriba la Instrucción de Álgebra Relacional:");
+
+        jLabel4.setText("Tablas Permanentes:");
+
+        jLabel2.setText("Instrucción Equivalente en SQL:");
+
+        scrollpanePermanentes.setComponentPopupMenu(popupPermanentes);
+
+        listaPermanentes.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        listaPermanentes.setInheritsPopupMenu(true);
+        scrollpanePermanentes.setViewportView(listaPermanentes);
+
+        scrollpaneTemporales.setComponentPopupMenu(popupTemporales);
+
+        listaTemporales.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        listaTemporales.setInheritsPopupMenu(true);
+        scrollpaneTemporales.setViewportView(listaTemporales);
+
+        tablaGeneral.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {},
+                {},
+                {},
+                {}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+
             }
         ));
-        jScrollPane4.setViewportView(jTable1);
+        scrollpaneGeneral.setViewportView(tablaGeneral);
 
-        jButton3.setFont(new java.awt.Font("Cambria Math", 1, 18)); // NOI18N
-        jButton3.setText("σ");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        textfieldInstruccionAR.setFont(new java.awt.Font("Cambria Math", 0, 13)); // NOI18N
+
+        textfieldInstruccionSQL.setEditable(false);
+        textfieldInstruccionSQL.setFont(new java.awt.Font("Cambria Math", 0, 13)); // NOI18N
+
+        botonEjecutar.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        botonEjecutar.setText("Ejecutar");
+        botonEjecutar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                botonEjecutarActionPerformed(evt);
             }
         });
 
-        jButton4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jButton4.setText("Ejecutar");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        comboboxOperaciones.setFont(new java.awt.Font("Cambria Math", 1, 12)); // NOI18N
+        comboboxOperaciones.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Selección (σ)", "Proyección (Π)", "Renombramiento (ρ)", "Producto Cartesiano (×)", "Union (∪)", "Intersección (∩)", "Diferencia (−)", "Join (⨝)", "Natural Join(⨝)", "Agregación (Ģ)", "Agrupación (Ģ)", "Alias (=>)", "And (&)", "Or (|)", "SUM", "COUNT", "MIN", "MAX", "AVG" }));
+
+        botonAgregar.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        botonAgregar.setText("Agregar");
+        botonAgregar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
-            }
-        });
-
-        jButton5.setFont(new java.awt.Font("Cambria Math", 1, 18)); // NOI18N
-        jButton5.setText("Π");
-
-        jButton6.setFont(new java.awt.Font("Cambria Math", 1, 18)); // NOI18N
-        jButton6.setText("∪");
-
-        jButton7.setFont(new java.awt.Font("Cambria Math", 1, 18)); // NOI18N
-        jButton7.setText("ρ");
-        jButton7.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton7ActionPerformed(evt);
-            }
-        });
-
-        jButton8.setFont(new java.awt.Font("Cambria Math", 1, 18)); // NOI18N
-        jButton8.setText("-");
-        jButton8.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton8ActionPerformed(evt);
-            }
-        });
-
-        jButton9.setFont(new java.awt.Font("Cambria Math", 1, 18)); // NOI18N
-        jButton9.setText("×");
-        jButton9.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton9ActionPerformed(evt);
-            }
-        });
-
-        jButton10.setFont(new java.awt.Font("Cambria Math", 1, 18)); // NOI18N
-        jButton10.setText("∩");
-
-        jButton11.setFont(new java.awt.Font("Cambria Math", 1, 18)); // NOI18N
-        jButton11.setText("⨝");
-        jButton11.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton11ActionPerformed(evt);
-            }
-        });
-
-        jButton12.setFont(new java.awt.Font("Cambria Math", 1, 18)); // NOI18N
-        jButton12.setText("Ģ");
-        jButton12.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton12ActionPerformed(evt);
+                botonAgregarActionPerformed(evt);
             }
         });
 
@@ -157,109 +119,130 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane4)
+                    .addComponent(scrollpaneGeneral)
+                    .addComponent(textfieldInstruccionAR)
+                    .addComponent(textfieldInstruccionSQL)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(comboboxOperaciones, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(botonAgregar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(botonEjecutar))
+                    .addComponent(jLabel1)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                    .addComponent(jButton3)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jButton5)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jButton7)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jButton8)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jButton10)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jButton6)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jButton12)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jButton4))
-                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 357, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jLabel4))
-                                    .addGap(18, 18, 18)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addComponent(jLabel5)
-                                            .addGap(0, 0, Short.MAX_VALUE))
-                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                            .addGap(0, 0, Short.MAX_VALUE)
-                                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 357, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                            .addComponent(jLabel1))
-                        .addGap(0, 19, Short.MAX_VALUE)))
+                            .addComponent(scrollpanePermanentes, javax.swing.GroupLayout.PREFERRED_SIZE, 476, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel5)
+                            .addComponent(scrollpaneTemporales, javax.swing.GroupLayout.PREFERRED_SIZE, 499, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(scrollpanePermanentes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(scrollpaneTemporales, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(9, 9, 9)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton3)
-                    .addComponent(jButton5)
-                    .addComponent(jButton6)
-                    .addComponent(jButton7)
-                    .addComponent(jButton8)
-                    .addComponent(jButton9)
-                    .addComponent(jButton10)
-                    .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton12, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(textfieldInstruccionAR, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 422, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(12, 12, 12))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(botonEjecutar)
+                    .addComponent(comboboxOperaciones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(botonAgregar)
+                    .addComponent(jLabel2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(textfieldInstruccionSQL, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(scrollpaneGeneral, javax.swing.GroupLayout.DEFAULT_SIZE, 317, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton9ActionPerformed
+    private void botonEjecutarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonEjecutarActionPerformed
 
-    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton7ActionPerformed
+    }//GEN-LAST:event_botonEjecutarActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
-
-    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton11ActionPerformed
-
-    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton8ActionPerformed
-
-    private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton12ActionPerformed
-
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton4ActionPerformed
+    private void botonAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonAgregarActionPerformed
+        try{
+            String instruccion;
+            switch(comboboxOperaciones.getSelectedItem().toString()){
+                case "Selección (σ)":
+                    instruccion = ParserAR.SELECCION_FUNCION;
+                    break;
+                case "Proyección (Π)":
+                    instruccion = ParserAR.PROYECCION_FUNCION;
+                    break;
+                case "Renombramiento (ρ)":
+                    instruccion = ParserAR.RENOMBRAMIENTO_FUNCION;
+                    break;
+                case "Producto Cartesiano (×)":
+                    instruccion = ParserAR.PRODUCTO_CARTESIANO_FUNCION;
+                    break;
+                case "Union (∪)":
+                    instruccion = ParserAR.UNION_FUNCION;
+                    break;
+                case "Intersección (∩)":
+                    instruccion = ParserAR.INTERSECCION_FUNCION;
+                    break;
+                case "Diferencia (-)":
+                    instruccion = ParserAR.DIFERENCIA_FUNCION;
+                    break;
+                case "Join (⨝)":
+                    instruccion = ParserAR.JOIN_FUNCION;
+                    break;
+                case "Natural Join(⨝)":
+                    instruccion = ParserAR.NATURAL_JOIN_FUNCION;
+                    break;
+                case "Agregación (Ģ)":
+                case "Agrupación (Ģ)":
+                    instruccion = ParserAR.AGREGACION_FUNCION;
+                    break;
+                case "Alias (=>)":
+                    instruccion = ParserAR.ALIAS_FUNCION;
+                    break;
+                case "And (&)":
+                    instruccion = ParserAR.AND_FUNCION;
+                    break;
+                case "Or (|)":
+                    instruccion = ParserAR.OR_FUNCION;
+                    break;
+                case "SUM":
+                    instruccion = ParserAR.SUM_FUNCION;
+                    break;
+                case "COUNT":
+                    instruccion = ParserAR.COUNT_FUNCION;
+                    break;
+                case "MIN":
+                    instruccion = ParserAR.MIN_FUNCION;
+                    break;
+                case "MAX":
+                    instruccion = ParserAR.MAX_FUNCION;
+                    break;
+                case "AVG":
+                    instruccion = ParserAR.AVG_FUNCION;
+                    break;
+                default:
+                    instruccion = "";
+            }
+            textfieldInstruccionAR.getDocument().insertString(textfieldInstruccionAR.getCaretPosition(), instruccion, null);
+        }catch(BadLocationException exception){
+            UI.getInstance().displayError("Interfaz Gráfica: "+exception.getMessage());
+        }
+    }//GEN-LAST:event_botonAgregarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -297,25 +280,26 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton10;
-    private javax.swing.JButton jButton11;
-    private javax.swing.JButton jButton12;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
-    private javax.swing.JButton jButton8;
-    private javax.swing.JButton jButton9;
+    private javax.swing.JButton botonAgregar;
+    private javax.swing.JButton botonEjecutar;
+    private javax.swing.JComboBox comboboxOperaciones;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JList jList1;
-    private javax.swing.JList jList2;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JList listaPermanentes;
+    private javax.swing.JList listaTemporales;
+    private javax.swing.JMenuItem menuItemCopiarNombrePermanentes;
+    private javax.swing.JMenuItem menuItemCopiarNombreTemporales;
+    private javax.swing.JMenuItem menuItemVerTablaPermanentes;
+    private javax.swing.JMenuItem menuItemVerTablaTemporales;
+    private javax.swing.JPopupMenu popupPermanentes;
+    private javax.swing.JPopupMenu popupTemporales;
+    private javax.swing.JScrollPane scrollpaneGeneral;
+    private javax.swing.JScrollPane scrollpanePermanentes;
+    private javax.swing.JScrollPane scrollpaneTemporales;
+    private javax.swing.JTable tablaGeneral;
+    private javax.swing.JTextField textfieldInstruccionAR;
+    private javax.swing.JTextField textfieldInstruccionSQL;
     // End of variables declaration//GEN-END:variables
 }

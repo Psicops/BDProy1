@@ -1,11 +1,24 @@
 package launcher;
 
-import logic.ParserAR;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+
+import logic.*;
+import ui.*;
 
 public class Launcher {
     public static void main(String[] args) {
-        //try{
-            System.out.println(ParserAR.parsear("σ notas = 100 and cantidad_cursos = 5 (tabla)"));
-        //}catch(Exception e){System.out.println(e.getMessage());}
+        //setting windows look and feel for the ui
+        try { 
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+        } catch (Exception ex) { 
+            JOptionPane.showMessageDialog(null, "Usted no está usando windows, entonces puede que la interfaz se vea un poco mal. :(", "ERROR",
+                                          JOptionPane.ERROR_MESSAGE); 
+        }
+        
+        UI.getInstance();
+        
+        LogIn vn = new LogIn();
+        vn.show();
     }
 }
