@@ -18,6 +18,19 @@
             <Property name="text" type="java.lang.String" value="Ver Tabla"/>
           </Properties>
         </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="menuItemModificarTablaPermanentes">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Modificar Tabla"/>
+          </Properties>
+        </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="menuItemAgregarTablaPermanentes">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Agregar Tabla"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuItemAgregarTablaPermanentesActionPerformed"/>
+          </Events>
+        </MenuItem>
       </SubComponents>
     </Container>
     <Container class="javax.swing.JPopupMenu" name="popupTemporales">
@@ -36,17 +49,33 @@
             <Property name="text" type="java.lang.String" value="Ver Tabla"/>
           </Properties>
         </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="menuItemModificarTablaTemporales">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="ModificarTabla"/>
+          </Properties>
+        </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="menuItemAgregarTablaTemporales">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Agregar Tabla"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuItemAgregarTablaTemporalesActionPerformed"/>
+          </Events>
+        </MenuItem>
       </SubComponents>
     </Container>
   </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
-    <Property name="resizable" type="boolean" value="false"/>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
     <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
   </SyntheticProperties>
+  <Events>
+    <EventHandler event="windowClosed" listener="java.awt.event.WindowListener" parameters="java.awt.event.WindowEvent" handler="formWindowClosed"/>
+    <EventHandler event="windowClosing" listener="java.awt.event.WindowListener" parameters="java.awt.event.WindowEvent" handler="formWindowClosing"/>
+  </Events>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
@@ -65,32 +94,36 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="scrollpaneGeneral" max="32767" attributes="0"/>
-                  <Component id="textfieldInstruccionAR" max="32767" attributes="0"/>
-                  <Component id="textfieldInstruccionSQL" alignment="0" max="32767" attributes="0"/>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="32767" attributes="0"/>
-                      <Component id="comboboxOperaciones" min="-2" pref="198" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="botonAgregar" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="botonEjecutar" min="-2" max="-2" attributes="0"/>
-                  </Group>
                   <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="scrollpaneGeneral" max="32767" attributes="0"/>
+                          <Component id="textfieldInstruccionAR" max="32767" attributes="0"/>
+                          <Component id="textfieldInstruccionSQL" alignment="0" max="32767" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
+                              <Component id="comboboxOperaciones" min="-2" pref="198" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="botonAgregar" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="botonEjecutar" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                  </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="scrollpanePermanentes" min="-2" pref="476" max="-2" attributes="0"/>
                           <Component id="jLabel4" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
-                          <Component id="scrollpaneTemporales" min="-2" pref="499" max="-2" attributes="0"/>
+                          <Component id="scrollpaneTemporales" alignment="0" min="-2" pref="495" max="-2" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
-              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -242,7 +275,7 @@
           <Font name="Cambria Math" size="12" style="1"/>
         </Property>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="19">
+          <StringArray count="20">
             <StringItem index="0" value="Selecci&#xf3;n (&#x3c3;)"/>
             <StringItem index="1" value="Proyecci&#xf3;n (&#x3a0;)"/>
             <StringItem index="2" value="Renombramiento (&#x3c1;)"/>
@@ -250,18 +283,19 @@
             <StringItem index="4" value="Union (&#x222a;)"/>
             <StringItem index="5" value="Intersecci&#xf3;n (&#x2229;)"/>
             <StringItem index="6" value="Diferencia (&#x2212;)"/>
-            <StringItem index="7" value="Join (&#x2a1d;)"/>
-            <StringItem index="8" value="Natural Join(&#x2a1d;)"/>
-            <StringItem index="9" value="Agregaci&#xf3;n (&#x122;)"/>
-            <StringItem index="10" value="Agrupaci&#xf3;n (&#x122;)"/>
-            <StringItem index="11" value="Alias (=&gt;)"/>
-            <StringItem index="12" value="And (&amp;)"/>
-            <StringItem index="13" value="Or (|)"/>
-            <StringItem index="14" value="SUM"/>
-            <StringItem index="15" value="COUNT"/>
-            <StringItem index="16" value="MIN"/>
-            <StringItem index="17" value="MAX"/>
-            <StringItem index="18" value="AVG"/>
+            <StringItem index="7" value="Divisi&#xf3;n (&#xf7;)"/>
+            <StringItem index="8" value="Join (&#x2a1d;)"/>
+            <StringItem index="9" value="Natural Join(&#x2a1d;)"/>
+            <StringItem index="10" value="Agregaci&#xf3;n (&#x122;)"/>
+            <StringItem index="11" value="Agrupaci&#xf3;n (&#x122;)"/>
+            <StringItem index="12" value="Alias (=&gt;)"/>
+            <StringItem index="13" value="And (&amp;)"/>
+            <StringItem index="14" value="Or (&#xa1;)"/>
+            <StringItem index="15" value="SUM"/>
+            <StringItem index="16" value="COUNT"/>
+            <StringItem index="17" value="MIN"/>
+            <StringItem index="18" value="MAX"/>
+            <StringItem index="19" value="AVG"/>
           </StringArray>
         </Property>
       </Properties>

@@ -17,7 +17,6 @@ public class Launcher {
         }
         
         UI.getInstance();
-        
         LogIn vn = new LogIn();
         vn.show();
     }

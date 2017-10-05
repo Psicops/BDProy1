@@ -92,6 +92,7 @@ public class LogIn extends javax.swing.JFrame {
         if(logic.Conexion.getStatus()){
             VentanaPrincipal obj = new VentanaPrincipal();
             obj.show();
+            obj.updatear();
             dispose();
         }else{
             JOptionPane.showMessageDialog(null, "Usuario o Contraseña incorrectos.", "Error de Conexion",
