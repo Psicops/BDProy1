@@ -14,7 +14,6 @@ public class VentanaAgregarTabla extends javax.swing.JFrame {
     private final VentanaPrincipal padre;
     private final DefaultListModel listaAtributosModelo;
     
-    public static String schemaName = "proy1.";
     
     public VentanaAgregarTabla(VentanaPrincipal padre, boolean tipo) {
         this.tipo = tipo;
@@ -22,8 +21,10 @@ public class VentanaAgregarTabla extends javax.swing.JFrame {
         this.listaAtributosModelo = new DefaultListModel();
         initComponents();
         this.listaAtributos.setModel(listaAtributosModelo);
-        if(tipo ==  TEMPORAL)
+        if(tipo ==  TEMPORAL){
             this.setTitle("Agregar Tabla Temporal");
+            checkboxLlaveForanea.setEnabled(false);
+        }
         else
             this.setTitle("Agregar Tabla Permanente");
     }
@@ -67,9 +68,9 @@ public class VentanaAgregarTabla extends javax.swing.JFrame {
         public String toString(){
             String toString;
             if(tipo == TEMPORAL)
-                toString = "create table ##"+nombre+"(";
+                toString = "create table proy1.##"+nombre+"(";
             else
-                toString = "create table "+nombre+"(";
+                toString = "create table proy1."+nombre+"(";
             
             for(Atributo atributo : atributos){
                 toString += atributo.toString()+",";
@@ -232,13 +233,13 @@ public class VentanaAgregarTabla extends javax.swing.JFrame {
 
     private void botonCrearTablaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonCrearTablaActionPerformed
         ArrayList<Atributo> al = new ArrayList(Arrays.asList(listaAtributosModelo.toArray()));
-        Tabla tabla = new Tabla(schemaName + textfieldNombreTabla.getText(), tipo, al);
+        Tabla tabla = new Tabla(textfieldNombreTabla.getText(), tipo, al);
         try{
             Conexion.ejecutaInstruccion(tabla.toString());
             UI.getInstance().displayInfo("Tabla agregada exitosamente.");
             padre.updatear();
             this.dispose();
-        }catch(SQLException ex){
+        }catch(SQLException | ClassNotFoundException ex){
             UI.getInstance().displayError("Al crear la tabla: "+ex.getMessage());
         }
     }//GEN-LAST:event_botonCrearTablaActionPerformed

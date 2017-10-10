@@ -22,8 +22,9 @@ public class ParserAR {
     public static final String AS = "=>";
     public static final String AND = "&";
     public static final String OR = "¡";
-    public static final String ARITMETICA = ">|<|=|<=|>=|\\+|-|\\*|/";
-    public static final String GUARDAR = "<-";
+    public static final String ARITMETICA_2_SIMBOLO = "!=|<=|>=";
+    public static final String ARITMETICA_1_SIMBOLO = ">|<|=|\\+|-|\\*|/";
+    public static final String GUARDAR = "~";
     
     public static final String SELECCION_FUNCION = SELECCION+"[]()";
     public static final String PROYECCION_FUNCION = PROYECCION+"[]()";
@@ -44,7 +45,7 @@ public class ParserAR {
     public static final String MIN_FUNCION = MIN+"()";
     public static final String MAX_FUNCION = MAX+"()";
     public static final String AVG_FUNCION = AVG+"()";
-    public static final String GUARDAR_FUNCION = GUARDAR+"()";
+    public static final String GUARDAR_FUNCION = GUARDAR;
     
     private static final String SELECCION_REGEX = SELECCION + "\\[([^\\[]+?)\\]\\((.+)\\)";
     private static final String PROYECCION_REGEX = PROYECCION + "\\[([^\\[]+?)\\]\\((.+)\\)";
@@ -58,14 +59,16 @@ public class ParserAR {
     private static final String NATURAL_JOIN_REGEX = "(.+)(?:"+JOIN+")(.+)";
     private static final String AGREGACION_REGEX = "["+AGREGACION+"]\\[([^\\[]+?)\\]\\((.+)\\)";
     private static final String AGRUPACION_REGEX = "(.+)["+AGREGACION+"]\\[([^\\[]+?)\\]\\((.+)\\)";
-    private static final String ATOMO_REGEX = "[\\w][\\w\\.]*";
+    private static final String ATOMO_REGEX = "(##)?[\\w][\\w\\.]*";
     private static final String ALIAS_REGEX = "(.+)"+AS+"(.+)";
     private static final String FUNCION_AGREGACION_REGEX = "("+SUM+"|"+COUNT+"|"+MIN+"|"+MAX+"|"+AVG+")\\((.+)\\)";
     private static final String LISTA_REGEX = "(.+?),(.+)";
     private static final String PREDICADO_REGEX = "(.+)("+AND+"|"+OR+")(.+)";
-    private static final String ARITMETICA_REGEX = "(.+)("+ARITMETICA+")(.+)";
+    private static final String ARITMETICA_2_SIMBOLO_REGEX = "(.+)("+ARITMETICA_2_SIMBOLO+")(.+)";
+    private static final String ARITMETICA_1_SIMBOLO_REGEX = "(.+)("+ARITMETICA_1_SIMBOLO+")(.+)";
     private static final String PARENTESIS_REGEX = "\\((.+)\\)";
     private static final String STRING_REGEX = "['](.+)[']";
+    private static final String GUARDAR_REGEX = "(.+)"+GUARDAR+"(.+)";
     
     public static String parsear(String expresion) throws IllegalArgumentException{
         return parsear (expresion, true);
@@ -88,11 +91,19 @@ public class ParserAR {
             System.out.println("Parentesis encontrado: "+expresion);
             return "("+parsear(matcher.group(1), false)+")";
         }
+        else if(expresion.matches(GUARDAR_REGEX)){
+            matcher = Pattern.compile(GUARDAR_REGEX).matcher(expresion);
+            matcher.find();
+            System.out.println("Petición para guardar tabla resultante encontrada: " + expresion);
+            return "select * into ##" + parsear(matcher.group(1), false) + " from " + parsear(matcher.group(2), false) +
+                    " select * from ##" + parsear(matcher.group(1), false);
+        }
         else if(expresion.matches(RENOMBRAMIENTO_REGEX)){
             matcher = Pattern.compile(RENOMBRAMIENTO_REGEX).matcher(expresion);
             matcher.find();
             System.out.println("Rename encontrado: "+expresion);
-            return "exec sp_rename \'"+parsear(matcher.group(2), false)+"\', \'"+parsear(matcher.group(1), false)+"\'";
+            //Conexion.agregarRename(UNION, UNION);
+            return "";
         }
         else if(expresion.matches(PRODUCTO_CARTESIANO_REGEX)){
             matcher = Pattern.compile(PRODUCTO_CARTESIANO_REGEX).matcher(expresion);
@@ -101,34 +112,34 @@ public class ParserAR {
             if(primero)
                 return "select * from "+parsear(matcher.group(1), false)+", "+parsear(matcher.group(2), false);
             else
-                return "(select * from "+parsear(matcher.group(1), false)+", "+parsear(matcher.group(2), false)+")";
+                return "(select * from "+parsear(matcher.group(1), false)+", "+parsear(matcher.group(2), false)+") producto_cartesiano";
         }
         else if(expresion.matches(UNION_REGEX)){
             matcher = Pattern.compile(UNION_REGEX).matcher(expresion);
             matcher.find();
             System.out.println("Union encontrada: "+expresion);
             if(primero)
-                return parsear(matcher.group(1), false)+" union "+parsear(matcher.group(2), false);
+                return "select * from "+parsear(matcher.group(1), false)+" union select * from "+parsear(matcher.group(2), false);
             else
-                return "("+parsear(matcher.group(1), false)+" union "+parsear(matcher.group(2), false)+")";
+                return "(select * from "+parsear(matcher.group(1), false)+" union select * from "+parsear(matcher.group(2), false)+") union_";
         }
         else if(expresion.matches(INTERSECCION_REGEX)){
             matcher = Pattern.compile(INTERSECCION_REGEX).matcher(expresion);
             matcher.find();
             System.out.println("Interseccion encontrada: "+expresion);
             if(primero)
-                return parsear(matcher.group(1), false)+" intersect "+parsear(matcher.group(2), false);
+                return "select * from " + parsear(matcher.group(1), false)+" intersect select * from "+parsear(matcher.group(2), false);
             else
-                return "(" + parsear(matcher.group(1), false)+" intersect "+parsear(matcher.group(2), false)+")";
+                return "(select * from " + parsear(matcher.group(1), false)+" intersect select * from "+parsear(matcher.group(2), false)+") interseccion";
         }
         else if(expresion.matches(DIFERENCIA_REGEX)){
             matcher = Pattern.compile(DIFERENCIA_REGEX).matcher(expresion);
             matcher.find();
             System.out.println("Diferencia encontrada: "+expresion);
             if(primero)
-                return parsear(matcher.group(1), false)+" except "+parsear(matcher.group(2), false);
+                return "select * from "+parsear(matcher.group(1), false)+" except select * from "+parsear(matcher.group(2), false);
             else
-                return "("+parsear(matcher.group(1), false)+" except "+parsear(matcher.group(2), false)+")";
+                return "(select * from " + parsear(matcher.group(1), false)+" except select * from "+parsear(matcher.group(2), false)+") diferencia";
         }
         else if(expresion.matches(DIVISION_REGEX)){
             matcher = Pattern.compile(DIVISION_REGEX).matcher(expresion);
@@ -146,7 +157,7 @@ public class ParserAR {
             if(primero)
                 return "select * from "+parsear(matcher.group(1), false)+" join "+parsear(matcher.group(3), false)+" on "+parsear(matcher.group(2), false);
             else
-                return "(select * from "+parsear(matcher.group(1), false)+" join "+parsear(matcher.group(3), false)+" on "+parsear(matcher.group(2), false)+")";
+                return "(select * from "+parsear(matcher.group(1), false)+" join "+parsear(matcher.group(3), false)+" on "+parsear(matcher.group(2), false)+") join_";
         }
         else if(expresion.matches(NATURAL_JOIN_REGEX)){
             matcher = Pattern.compile(JOIN_REGEX).matcher(expresion);
@@ -155,25 +166,25 @@ public class ParserAR {
             if(primero)
                 return "select * from "+parsear(matcher.group(1), false)+" join "+parsear(matcher.group(2), false);
             else
-                return "(select * from "+parsear(matcher.group(1), false)+" join "+parsear(matcher.group(2), false)+")";
+                return "(select * from "+parsear(matcher.group(1), false)+" join "+parsear(matcher.group(2), false)+") natural_join";
         }
         else if(expresion.matches(AGREGACION_REGEX)){
             matcher = Pattern.compile(AGREGACION_REGEX).matcher(expresion);
             matcher.find();
-            System.out.println("Rename encontrado: "+expresion);
+            System.out.println("Agregacion encontrada: "+expresion);
             if(primero)
                 return "select "+parsear(matcher.group(1), false)+" from "+parsear(matcher.group(2), false);
             else
-                return "(select "+parsear(matcher.group(1), false)+" from "+parsear(matcher.group(2), false)+")";
+                return "(select "+parsear(matcher.group(1), false)+" from "+parsear(matcher.group(2), false)+") agregacion";
         }
         else if(expresion.matches(AGRUPACION_REGEX)){
             matcher = Pattern.compile(AGRUPACION_REGEX).matcher(expresion);
             matcher.find();
             System.out.println("Agrupacion encontrada: "+expresion);
             if(primero)
-                return "select "+parsear(matcher.group(1), false)+","+parsear(matcher.group(2), false)+" from "+parsear(matcher.group(3), false);
+                return "select "+parsear(matcher.group(1), false)+","+parsear(matcher.group(2), false)+" from "+parsear(matcher.group(3), false) + " group by "+parsear(matcher.group(1), false);
             else
-                return "(select "+parsear(matcher.group(1), false)+","+parsear(matcher.group(2), false)+" from "+parsear(matcher.group(3), false)+")";
+                return "(select "+parsear(matcher.group(1), false)+","+parsear(matcher.group(2), false)+" from "+parsear(matcher.group(3), false)+" group by "+parsear(matcher.group(1), false)+") agrupacion";
         }
         else if(expresion.matches(SELECCION_REGEX)){
             matcher = Pattern.compile(SELECCION_REGEX).matcher(expresion);
@@ -182,7 +193,7 @@ public class ParserAR {
             if(primero)
                 return "select * from "+parsear(matcher.group(2), false)+" where "+parsear(matcher.group(1), false);
             else 
-                return parsear(matcher.group(2), false)+" where "+parsear(matcher.group(1), false);
+                return "(select * from "+parsear(matcher.group(2), false)+" where "+parsear(matcher.group(1), false)+") seleccion";
         }
         else if(expresion.matches(PROYECCION_REGEX)){
             matcher = Pattern.compile(PROYECCION_REGEX).matcher(expresion);
@@ -191,7 +202,7 @@ public class ParserAR {
             if(primero)
                 return "select "+parsear(matcher.group(1), false)+" from "+parsear(matcher.group(2), false);
             else
-                return "(select "+parsear(matcher.group(1), false)+" from "+parsear(matcher.group(2), false)+")";
+                return "(select "+parsear(matcher.group(1), false)+" from "+parsear(matcher.group(2), false)+") proyeccion";
         }
         else if(expresion.matches(LISTA_REGEX)){
             matcher = Pattern.compile(LISTA_REGEX).matcher(expresion);
@@ -209,7 +220,10 @@ public class ParserAR {
             matcher = Pattern.compile(FUNCION_AGREGACION_REGEX).matcher(expresion);
             matcher.find();
             System.out.println("Funcion de agregacion encontrada: "+expresion);
-            return matcher.group(1)+"("+parsear(matcher.group(2), false)+")";
+            if(primero)
+                return matcher.group(1)+"("+parsear(matcher.group(2), false)+")";
+            else
+                return "("+matcher.group(1)+"("+parsear(matcher.group(2), false)+")"+") "+matcher.group(1)+"_"+matcher.group(2);
         }
         else if(expresion.matches(ALIAS_REGEX)){
             matcher = Pattern.compile(ALIAS_REGEX).matcher(expresion);
@@ -217,12 +231,18 @@ public class ParserAR {
             System.out.println("Alias encontrado: "+expresion);
             return parsear(matcher.group(1), false)+" as "+parsear(matcher.group(2), false);
         }
-        else if(expresion.matches(ARITMETICA_REGEX)){
-            matcher = Pattern.compile(ARITMETICA_REGEX).matcher(expresion);
+        else if(expresion.matches(ARITMETICA_2_SIMBOLO_REGEX)){
+            matcher = Pattern.compile(ARITMETICA_2_SIMBOLO_REGEX).matcher(expresion);
             matcher.find();
-            System.out.println("Operacion aritmetica encontrada: "+expresion);
+            System.out.println("Operacion aritmetica de dos simbolos encontrada: "+expresion);
             return parsear(matcher.group(1), false)+matcher.group(2)+parsear(matcher.group(3), false);
-        } 
+        }
+        else if(expresion.matches(ARITMETICA_1_SIMBOLO_REGEX)){
+            matcher = Pattern.compile(ARITMETICA_1_SIMBOLO_REGEX).matcher(expresion);
+            matcher.find();
+            System.out.println("Operacion aritmetica de un simbolo encontrada: "+expresion);
+            return parsear(matcher.group(1), false)+matcher.group(2)+parsear(matcher.group(3), false);
+        }
         else
             throw new IllegalArgumentException("La expresión \""+expresion+"\" no es válida.");
     }

@@ -1,6 +1,9 @@
 package ui;
 
 import com.sun.glass.events.KeyEvent;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 public class LogIn extends javax.swing.JFrame {
@@ -88,7 +91,13 @@ public class LogIn extends javax.swing.JFrame {
 
     private void conectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_conectarActionPerformed
         logic.Conexion.setCuenta(usser.getText(), pass.getText());
-        logic.Conexion.getConexion();
+        try {
+            logic.Conexion.getConexion();
+        } catch (SQLException ex) {
+            UI.getInstance().displayError("Error de conexión: "+ex.getMessage());
+        } catch (ClassNotFoundException ex) {
+            UI.getInstance().displayError("No se pudo establecer conexión. Revisar Driver " + ex.getMessage());
+        }
         if(logic.Conexion.getStatus()){
             VentanaPrincipal obj = new VentanaPrincipal();
             obj.show();

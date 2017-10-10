@@ -3,6 +3,8 @@ package ui;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.BadLocationException;
@@ -24,24 +26,32 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         DefaultListModel listModelT = new DefaultListModel();
 	listaPermanentes.setModel(listModelP);
 	listaTemporales.setModel(listModelT);
-        try{
-            ResultSet rsP = Conexion.ejecutaQuery("select name from sysobjects where type='U'");
-            ResultSet rsT = Conexion.ejecutaQuery("select name from tempdb..sysobjects");
-            while(rsP.next()){
-                String tabla = rsP.getString(1) + "(";
-                    //Código para atributos.
-                tabla += ")";
-                listModelP.addElement(tabla);
+        try{ 
+            for(String nombre : Conexion.getNombresTablasPermanentes()){
+                listModelP.addElement(nombre);
             }
-            while(rsT.next()){
-                String tabla = rsP.getString(1) + "(";
-                    //Código para atributos.
-                tabla += ")";
-                listModelT.addElement(tabla);
+            for(String nombre : Conexion.getNombresTablasTemporales()){
+                listModelT.addElement(nombre);
             }
-        } catch (SQLException ex) {
+        } catch (SQLException | ClassNotFoundException ex) {
             UI.getInstance().displayError("Al ejecutar la instruccion en SQL:\n"+ex.getMessage());
         }
+    }
+    
+    public boolean mensajeError(String ex){
+        String tabla = "";
+        int i = 21;
+        while(!"'".equals(ex.substring(i,i+1))){
+            tabla += ex.substring(i,i+1);
+            i++;
+        }
+        System.out.println(ex);
+        System.out.println("El nombre de objeto '"+ tabla +"' no es válido.");
+        if(ex.equals("El nombre de objeto '"+ tabla +"' no es válido.")){
+            UI.getInstance().displayError("ERROR: NO EXISTE LA TABLA "+ tabla);
+            return true;
+        }
+        return false;
     }
     
     public void displayInfoTabla(ResultSet tabla) throws SQLException{
@@ -67,13 +77,13 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         popupPermanentes = new javax.swing.JPopupMenu();
         menuItemCopiarNombrePermanentes = new javax.swing.JMenuItem();
         menuItemVerTablaPermanentes = new javax.swing.JMenuItem();
-        menuItemModificarTablaPermanentes = new javax.swing.JMenuItem();
         menuItemAgregarTablaPermanentes = new javax.swing.JMenuItem();
+        menuItemDiccionarioPermanentes = new javax.swing.JMenuItem();
         popupTemporales = new javax.swing.JPopupMenu();
         menuItemCopiarNombreTemporales = new javax.swing.JMenuItem();
         menuItemVerTablaTemporales = new javax.swing.JMenuItem();
-        menuItemModificarTablaTemporales = new javax.swing.JMenuItem();
         menuItemAgregarTablaTemporales = new javax.swing.JMenuItem();
+        menuItemDiccionarioTemporales = new javax.swing.JMenuItem();
         jLabel5 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -91,13 +101,20 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         botonAgregar = new javax.swing.JButton();
 
         menuItemCopiarNombrePermanentes.setText("Copiar Nombre");
+        menuItemCopiarNombrePermanentes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemCopiarNombrePermanentesActionPerformed(evt);
+            }
+        });
         popupPermanentes.add(menuItemCopiarNombrePermanentes);
 
         menuItemVerTablaPermanentes.setText("Ver Tabla");
+        menuItemVerTablaPermanentes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemVerTablaPermanentesActionPerformed(evt);
+            }
+        });
         popupPermanentes.add(menuItemVerTablaPermanentes);
-
-        menuItemModificarTablaPermanentes.setText("Modificar Tabla");
-        popupPermanentes.add(menuItemModificarTablaPermanentes);
 
         menuItemAgregarTablaPermanentes.setText("Agregar Tabla");
         menuItemAgregarTablaPermanentes.addActionListener(new java.awt.event.ActionListener() {
@@ -107,14 +124,29 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         });
         popupPermanentes.add(menuItemAgregarTablaPermanentes);
 
+        menuItemDiccionarioPermanentes.setText("Ver Diccionario de Datos");
+        menuItemDiccionarioPermanentes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemDiccionarioPermanentesActionPerformed(evt);
+            }
+        });
+        popupPermanentes.add(menuItemDiccionarioPermanentes);
+
         menuItemCopiarNombreTemporales.setText("Copiar Nombre");
+        menuItemCopiarNombreTemporales.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemCopiarNombreTemporalesActionPerformed(evt);
+            }
+        });
         popupTemporales.add(menuItemCopiarNombreTemporales);
 
         menuItemVerTablaTemporales.setText("Ver Tabla");
+        menuItemVerTablaTemporales.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemVerTablaTemporalesActionPerformed(evt);
+            }
+        });
         popupTemporales.add(menuItemVerTablaTemporales);
-
-        menuItemModificarTablaTemporales.setText("ModificarTabla");
-        popupTemporales.add(menuItemModificarTablaTemporales);
 
         menuItemAgregarTablaTemporales.setText("Agregar Tabla");
         menuItemAgregarTablaTemporales.addActionListener(new java.awt.event.ActionListener() {
@@ -123,6 +155,14 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
         });
         popupTemporales.add(menuItemAgregarTablaTemporales);
+
+        menuItemDiccionarioTemporales.setText("Ver Diccionnario de Datos");
+        menuItemDiccionarioTemporales.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemDiccionarioTemporalesActionPerformed(evt);
+            }
+        });
+        popupTemporales.add(menuItemDiccionarioTemporales);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -181,7 +221,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         });
 
         comboboxOperaciones.setFont(new java.awt.Font("Cambria Math", 1, 12)); // NOI18N
-        comboboxOperaciones.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Selección (σ)", "Proyección (Π)", "Renombramiento (ρ)", "Producto Cartesiano (×)", "Union (∪)", "Intersección (∩)", "Diferencia (−)", "División (÷)", "Join (⨝)", "Natural Join(⨝)", "Agregación (Ģ)", "Agrupación (Ģ)", "Alias (=>)", "And (&)", "Or (¡)", "SUM", "COUNT", "MIN", "MAX", "AVG" }));
+        comboboxOperaciones.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Selección (σ)", "Proyección (Π)", "Guardar (~)", "Renombramiento (ρ)", "Producto Cartesiano (×)", "Union (∪)", "Intersección (∩)", "Diferencia (−)", "División (÷)", "Join (⨝)", "Natural Join(⨝)", "Agregación (Ģ)", "Agrupación (Ģ)", "Alias (=>)", "And (&)", "Or (¡)", "SUM", "COUNT", "MIN", "MAX", "AVG" }));
 
         botonAgregar.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         botonAgregar.setText("Agregar");
@@ -255,12 +295,14 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
     private void botonEjecutarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonEjecutarActionPerformed
          try {
+             System.out.println(ParserAR.parsear(textfieldInstruccionAR.getText()));
             textfieldInstruccionSQL.setText(ParserAR.parsear(textfieldInstruccionAR.getText()));
             tabla_actual = Conexion.ejecutaQuery(textfieldInstruccionSQL.getText());
             displayInfoTabla(tabla_actual);
             this.updatear();
-        } catch (SQLException ex) {
-            UI.getInstance().displayError("Al ejecutar la instruccion en SQL:\n"+ex.getMessage());
+        } catch (SQLException | ClassNotFoundException ex) {
+            if(!mensajeError(ex.getMessage()))
+                UI.getInstance().displayError("Al ejecutar la instruccion en SQL:\n"+ex.getMessage());
         } catch (IllegalArgumentException ex){
             UI.getInstance().displayError("Al parsear la instruccion \""+textfieldInstruccionAR.getText()+"\":\n"+ex.getMessage());
         }
@@ -275,6 +317,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                     break;
                 case "Proyección (Π)":
                     instruccion = ParserAR.PROYECCION_FUNCION;
+                    break;
+                case "Guardar (~)":
+                    instruccion = ParserAR.GUARDAR_FUNCION;
                     break;
                 case "Renombramiento (ρ)":
                     instruccion = ParserAR.RENOMBRAMIENTO_FUNCION;
@@ -351,6 +396,48 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
     }//GEN-LAST:event_formWindowClosing
 
+    private void menuItemVerTablaPermanentesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemVerTablaPermanentesActionPerformed
+        try {
+            displayInfoTabla(Conexion.ejecutaQuery("select * from "+listaPermanentes.getSelectedValue().toString()));
+        } catch (SQLException | ClassNotFoundException ex) {
+            UI.getInstance().displayError("Error al desplegar informacion de tabla: "+ex.getMessage());
+        }
+    }//GEN-LAST:event_menuItemVerTablaPermanentesActionPerformed
+
+    private void menuItemVerTablaTemporalesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemVerTablaTemporalesActionPerformed
+        try {
+            displayInfoTabla(Conexion.ejecutaQuery("select * from "+listaTemporales.getSelectedValue().toString()));
+        } catch (SQLException | ClassNotFoundException ex) {
+            UI.getInstance().displayError("Error al desplegar informacion de tabla: "+ex.getMessage());
+        }
+    }//GEN-LAST:event_menuItemVerTablaTemporalesActionPerformed
+
+    private void menuItemCopiarNombreTemporalesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemCopiarNombreTemporalesActionPerformed
+        try{
+            textfieldInstruccionAR.getDocument().insertString(textfieldInstruccionAR.getCaretPosition(), listaTemporales.getSelectedValue().toString(), null);
+        }catch(BadLocationException exception){
+            UI.getInstance().displayError("Interfaz Gráfica: "+exception.getMessage());
+        }
+    }//GEN-LAST:event_menuItemCopiarNombreTemporalesActionPerformed
+
+    private void menuItemCopiarNombrePermanentesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemCopiarNombrePermanentesActionPerformed
+        try{
+            textfieldInstruccionAR.getDocument().insertString(textfieldInstruccionAR.getCaretPosition(), listaPermanentes.getSelectedValue().toString(), null);
+        }catch(BadLocationException exception){
+            UI.getInstance().displayError("Interfaz Gráfica: "+exception.getMessage());
+        }
+    }//GEN-LAST:event_menuItemCopiarNombrePermanentesActionPerformed
+
+    private void menuItemDiccionarioPermanentesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemDiccionarioPermanentesActionPerformed
+        VentanaDiccionario vn = new VentanaDiccionario(VentanaAgregarTabla.PERMANENTE);
+        vn.setVisible(true);
+    }//GEN-LAST:event_menuItemDiccionarioPermanentesActionPerformed
+
+    private void menuItemDiccionarioTemporalesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemDiccionarioTemporalesActionPerformed
+        VentanaDiccionario vn = new VentanaDiccionario(VentanaAgregarTabla.TEMPORAL);
+        vn.setVisible(true);
+    }//GEN-LAST:event_menuItemDiccionarioTemporalesActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -400,8 +487,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem menuItemAgregarTablaTemporales;
     private javax.swing.JMenuItem menuItemCopiarNombrePermanentes;
     private javax.swing.JMenuItem menuItemCopiarNombreTemporales;
-    private javax.swing.JMenuItem menuItemModificarTablaPermanentes;
-    private javax.swing.JMenuItem menuItemModificarTablaTemporales;
+    private javax.swing.JMenuItem menuItemDiccionarioPermanentes;
+    private javax.swing.JMenuItem menuItemDiccionarioTemporales;
     private javax.swing.JMenuItem menuItemVerTablaPermanentes;
     private javax.swing.JMenuItem menuItemVerTablaTemporales;
     private javax.swing.JPopupMenu popupPermanentes;

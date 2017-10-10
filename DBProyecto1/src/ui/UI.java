@@ -5,9 +5,7 @@ import javax.swing.JOptionPane;
 public class UI {
     private static UI instancia;
     
-    private UI(){
-        //FALTA
-    }
+    private UI(){}
     
     public static UI getInstance(){
         if(instancia == null)
@@ -15,21 +13,19 @@ public class UI {
         return instancia;
     }
     
-    public void displayUI(){
-        //FALTA
-    }
+    public void displayUI(){}
     
     public void displayError(String message){
         JOptionPane.showMessageDialog(null, message, "ERROR",
                                       JOptionPane.ERROR_MESSAGE);
     }
     public void displayInfo(String message){
-        JOptionPane.showMessageDialog(null, message, "HS Stats Tracker",
+        JOptionPane.showMessageDialog(null, message, "Información",
                                       JOptionPane.INFORMATION_MESSAGE);
     }
     
     public boolean displayConfirm(String message){
-        int reply =  JOptionPane.showConfirmDialog(null, message, "HS StatsTracker", 
+        int reply =  JOptionPane.showConfirmDialog(null, message, "Pregunta", 
                                       JOptionPane.YES_NO_OPTION);
         return reply == JOptionPane.YES_OPTION;
     }
