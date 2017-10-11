@@ -5,14 +5,22 @@ import logic.Conexion;
 
 public class VentanaDiccionario extends javax.swing.JFrame {
     
-    public VentanaDiccionario(boolean tipo) {
+    public static int PERMANENTE = 0;
+    public static int TEMPORAL = 1;
+    public static int REFERENCIAS_CRUZADAS = 2;
+    
+    public VentanaDiccionario(int tipo) {
         initComponents();
         try{
-            if(tipo == VentanaAgregarTabla.PERMANENTE){
+            if(tipo == REFERENCIAS_CRUZADAS){
+                this.setTitle("Referencias Cruzadas");
+                textAreaDiccionario.setText(Conexion.getReferenciasCruzadas());
+            }
+            else if(tipo == PERMANENTE){
                 this.setTitle("Tablas Permanentes");
                 textAreaDiccionario.setText(Conexion.getDiccionarioPermanentes());
             }else{
-                this.setTitle("Tablas Termporales");
+                this.setTitle("Tablas Temporales");
                 textAreaDiccionario.setText(Conexion.getDiccionarioTemporales());
             }
         } catch(SQLException | ClassNotFoundException ex){
@@ -99,7 +107,7 @@ public class VentanaDiccionario extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new VentanaDiccionario(false).setVisible(true);
+                new VentanaDiccionario(0).setVisible(true);
             }
         });
     }

@@ -1,5 +1,8 @@
 package logic;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -70,11 +73,11 @@ public class ParserAR {
     private static final String STRING_REGEX = "['](.+)[']";
     private static final String GUARDAR_REGEX = "(.+)"+GUARDAR+"(.+)";
     
-    public static String parsear(String expresion) throws IllegalArgumentException{
+    public static String parsear(String expresion) throws IllegalArgumentException, SQLException, ClassNotFoundException{
         return parsear (expresion, true);
     }
     
-    private static String parsear(String expresion, boolean primero) throws IllegalArgumentException{
+    private static String parsear(String expresion, boolean primero) throws IllegalArgumentException, SQLException, ClassNotFoundException{
         expresion = expresion.replaceAll("\\s+", "");    
         Matcher matcher;
         if(expresion.matches(ATOMO_REGEX)){
@@ -102,8 +105,11 @@ public class ParserAR {
             matcher = Pattern.compile(RENOMBRAMIENTO_REGEX).matcher(expresion);
             matcher.find();
             System.out.println("Rename encontrado: "+expresion);
-            //Conexion.agregarRename(UNION, UNION);
-            return "";
+            String rename = matcher.group(1).split("\\(")[0];
+            String atributosStr = matcher.group(1).split("\\(")[1];
+            ArrayList<String> atributos = new ArrayList(Arrays.asList(atributosStr.replaceAll("\\)", "").split(",")));
+            Conexion.agregarRename(matcher.group(2), rename, atributos);
+            return "RENAME: "+matcher.group(2)+" -> "+matcher.group(1)+" (No manejado por SQL)";
         }
         else if(expresion.matches(PRODUCTO_CARTESIANO_REGEX)){
             matcher = Pattern.compile(PRODUCTO_CARTESIANO_REGEX).matcher(expresion);

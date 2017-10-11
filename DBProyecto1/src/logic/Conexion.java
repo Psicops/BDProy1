@@ -1,13 +1,14 @@
 package logic;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Conexion {
     
@@ -17,7 +18,7 @@ public class Conexion {
     public static String pass;
     public static boolean status = false;
     
-    private static final ArrayList<Tuple<String, String>> renames = new ArrayList();
+    private static ArrayList<Rename> renames = new ArrayList();
     
     public static Connection getConexion()throws SQLException, ClassNotFoundException{
         status = false;
@@ -66,42 +67,6 @@ public class Conexion {
         comando.execute();
     }
     
-    public static ArrayList<ResultSet> getPermanentes(){
-        ArrayList <ResultSet> rs = new ArrayList();
-        return rs;
-    }
-    
-    public static ArrayList<ResultSet> getTemporales(){
-        ArrayList <ResultSet> rs = new ArrayList();
-        return rs;
-    }
-    /*
-    public static int getAridadTabla(String nombreTabla){
-        
-    }
-    
-    public static ArrayList<String> getAtributosTabla(String nombreTabla){
-        
-    }
-    */
-    
-    public static String getNombreTabla(String nombre) {
-        for(Tuple<String, String> rename : renames){
-            if(rename.x.equals(nombre))
-                return rename.y;
-            else if(rename.y.equals(nombre))
-                return rename.x;
-        }
-        return nombre;
-    }
-    
-    private static void print_state(){
-        System.out.println("Estado actual de la lista de tuplas de renames:");
-        for(Tuple<String, String> tupla : renames){
-            System.out.println("\t"+tupla.x+" -> "+tupla.y);
-        }
-    }
-    
     public static ArrayList<String> getNombresTablasTemporales() throws SQLException, ClassNotFoundException{
         ArrayList<String> nombres = new ArrayList();
         ResultSet rs = Conexion.ejecutaQuery("SELECT TABLE_NAME FROM tempdb.INFORMATION_SCHEMA.TABLES");
@@ -125,16 +90,57 @@ public class Conexion {
         return nombres;
     }
     
-    public static String getDiccionarioTabla(String nombre){
-        String metadatosTabla = "";
-        
-        return metadatosTabla;
+    public static ArrayList<String> getAtributos(String nombreTabla) throws SQLException, ClassNotFoundException{
+        ResultSetMetaData metadatos = Conexion.ejecutaQuery("select * from "+nombreTabla).getMetaData();
+        ArrayList<String> atributos = new ArrayList();
+        for(int i = 1; i <= metadatos.getColumnCount(); i++)
+            atributos.add(metadatos.getColumnName(i));
+        return atributos;
     }
     
+    public static int getAridad(String nombreTabla) throws SQLException, ClassNotFoundException{
+        return Conexion.ejecutaQuery("select * from "+nombreTabla).getMetaData().getColumnCount();
+    }
+    
+    public static ArrayList<String> getLlavesPrimarias(String nombreTabla) throws SQLException, ClassNotFoundException{
+        ArrayList<String> llavesPrimarias = new ArrayList();
+        ResultSet rs = getConexion().getMetaData().getPrimaryKeys(null, null, nombreTabla);
+        while(rs.next()){
+            llavesPrimarias.add(rs.getString("COLUMN_NAME"));
+        }
+        return llavesPrimarias;
+    }
+    
+    public static ArrayList<String> getLlavesForaneas(String nombreTabla) throws SQLException, ClassNotFoundException{
+        ArrayList<String> llavesForaneas = new ArrayList();
+        ResultSet rs = getConexion().getMetaData().getImportedKeys(null, null, nombreTabla);
+        while(rs.next()){
+            llavesForaneas.add(rs.getString("FKCOLUMN_NAME"));
+        }
+        return llavesForaneas;
+    }
+    
+    public static String getDiccionarioTabla(String nombre) throws SQLException, ClassNotFoundException{
+        ArrayList<String> llavesPrimarias = getLlavesPrimarias(nombre);
+        ArrayList<String> llavesForaneas = getLlavesForaneas(nombre);
+        ResultSet tabla = Conexion.ejecutaQuery("select * from "+nombre);
+        ResultSetMetaData metadatos = tabla.getMetaData();
+        String diccionario = nombre+":\n";
+        for(int i = 1; i <= metadatos.getColumnCount(); i++){
+            diccionario += "\t"+metadatos.getColumnName(i)+" "+metadatos.getColumnTypeName(i);
+            if(llavesPrimarias.contains(metadatos.getColumnName(i)))
+                diccionario += " PK";
+            if(llavesForaneas.contains(metadatos.getColumnName(i)))
+                diccionario += " FK";
+            diccionario +="\n";
+        }
+        return diccionario;
+    }
+
     public static String getDiccionarioPermanentes() throws SQLException, ClassNotFoundException{
         String diccionario = "";
         for(String nombreTabla : Conexion.getNombresTablasPermanentes()){
-            diccionario = getDiccionarioTabla(nombreTabla)+"\n";
+            diccionario += getDiccionarioTabla(nombreTabla)+"\n";
         }
         return diccionario;
     }
@@ -142,7 +148,7 @@ public class Conexion {
     public static String getDiccionarioTemporales()throws SQLException, ClassNotFoundException{
         String diccionario = "";
         for(String nombreTabla : Conexion.getNombresTablasTemporales()){
-            diccionario = getDiccionarioTabla(nombreTabla)+"\n";
+            diccionario += getDiccionarioTabla(nombreTabla)+"\n";
         }
         return diccionario;
     }
@@ -153,40 +159,84 @@ public class Conexion {
         return nombres;
     }
     
+    public static String getReferenciasCruzadas() throws SQLException, ClassNotFoundException{
+        HashMap<String, ArrayList<String>> referencias = new HashMap();
+        for(String tabla : getNombresTablas()){
+            for(String llave : getLlavesForaneas(tabla)){
+                if(!referencias.containsKey(llave))
+                    referencias.put(llave, new ArrayList());
+                referencias.get(llave).add(tabla);
+            }
+        }
+        String referenciasStr = "";
+        for(String llave : new ArrayList<String>(referencias.keySet())){
+            referenciasStr += llave+":\n";
+            for(String tabla : referencias.get(llave))
+                referenciasStr +="\t"+tabla+"\n";
+            referenciasStr +="\n";
+        }
+        return referenciasStr;
+    }
+    
     private static boolean existeEnRenames(String nombre){
-        for(Tuple<String, String> tupla : renames){
-                if(tupla.y.equals(nombre)){
+        for(Rename tupla : renames){
+                if(tupla.nombreNuevo.equals(nombre)){
                     return true;
                 }
         }
         return false;
     }
     
-    public static void agregarRename(String nombre, String rename) throws IllegalArgumentException, SQLException, ClassNotFoundException{
+    public static void agregarRename(String nombre, String nombreNuevo, ArrayList<String> nuevosAtributos) throws IllegalArgumentException, SQLException, ClassNotFoundException{
         if(!getNombresTablas().contains(nombre))
-            throw new IllegalArgumentException("El nombre de tabla \""+nombre+"\" no existe en el sistema.");
-        else if(getNombresTablas().contains(rename))
-            throw new IllegalArgumentException("El nombre de tabla \""+rename+"\" para renombrar a \""+nombre
+            throw new IllegalArgumentException("ERROR: NO EXISTE LA TABLA \""+nombre+"\".");
+        else if(getNombresTablas().contains(nombreNuevo))
+            throw new IllegalArgumentException("El nombre de tabla \""+nombreNuevo+"\" para renombrar a \""+nombre
                                            +"\" ya existe en el sistema de base de datos.");
+        if(nuevosAtributos.size() != getAridad(nombre))
+            throw new IllegalArgumentException("No hay correspondencia en la cantidad de atributos.\n"+
+                                               "La tabla "+nombre+" tiene "+getAridad(nombre)+
+                                               " atributos y se están dando "+nuevosAtributos.size());
         else if(existeEnRenames(nombre)){
-            for(Tuple<String, String> tupla : renames){
-                if(tupla.y.equals(nombre)){
-                    tupla.y = rename;
+            for(Rename rename : renames){
+                if(rename.nombreNuevo.equals(nombre)){
+                    String nombreViejo = rename.nombreViejo;
+                    renames.remove(rename);
+                    renames.add(new Rename(nombreViejo, nombreNuevo, nuevosAtributos));
                     return;
                 }
             }
         }
-        else
-            renames.add(new Tuple(nombre, rename));
-        print_state();
+        else{
+            renames.add(new Rename(nombre, nombreNuevo, nuevosAtributos));
+        }
     }
     
-    private static class Tuple<X, Y> { 
-        public X x; 
-        public Y y; 
-        public Tuple(X x, Y y) { 
-            this.x = x; 
-            this.y = y; 
+    public static String getRename(String nombre){
+        for(Rename rename : renames){
+            if(rename.nombreNuevo.equals(nombre))
+                return rename.nombreNuevo;
+            
+        }
+        return nombre;
+    }
+    
+    public static ArrayList<String> getAtributosRename(String nombre) throws SQLException, ClassNotFoundException{
+        for(Rename rename : renames){
+            if(rename.nombreNuevo.equals(nombre))
+                return rename.atributos;
+        }
+        return getAtributos(nombre);
+    }
+    
+    private static class Rename{ 
+        public String nombreViejo;
+        public String nombreNuevo;
+        public ArrayList<String> atributos; 
+        public Rename(String nombreViejo, String nombreNuevo, ArrayList<String> atributos) { 
+            this.nombreViejo = nombreViejo;
+            this.nombreNuevo = nombreNuevo;
+            this.atributos = atributos; 
         } 
     } 
 }
